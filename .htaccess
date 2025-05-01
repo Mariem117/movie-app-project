@@ -1,0 +1,18 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Redirect clean URLs to PHP files
+RewriteRule ^wishlist$ wishlist.php [L]
+RewriteRule ^login$ login.php [L]
+RewriteRule ^sign_up$ sign_up.php [L]
+
+# Set the default directory index
+DirectoryIndex index.php
+
+# Deny access to sensitive files
+<Files "database.php">
+    Deny from all
+</Files>
+
+# Custom error pages
+ErrorDocument 404 /404.html

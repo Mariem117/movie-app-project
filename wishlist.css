@@ -1,0 +1,254 @@
+:root {
+    --primary-color: #2ecc71;
+    --primary-dark: #27ae60;
+    --primary-light: #7ed6a5;
+    --secondary-color: #2c3e50;
+    --accent-color: #f1c40f;
+    --background-color: #0a1f0d;
+    --card-bg: #132e17;
+    --text-color: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: rgba(46, 204, 113, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, Arial, sans-serif;
+    color: var(--text-color);
+    line-height: 1.6;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: url('image\ \(1\).png') repeat;
+    animation: moveBackground 90s linear infinite;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 31, 13, 0.9);
+    z-index: -1;
+}
+
+@keyframes moveBackground {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 0; }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mood-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    padding: 8px 15px;
+    border-radius: 30px;
+    border: 2px solid var(--border-color);
+}
+
+.spacer {
+    width: 80px;
+}
+
+.back-btn {
+    background-color: rgba(46, 204, 113, 0.15);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background-color: rgba(46, 204, 113, 0.25);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-align: left;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
+.wishlist-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: flex-start;
+}
+
+.movie-card {
+    width: calc(20% - 24px);
+    min-width: 180px;
+    background-color: var(--card-bg);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+}
+
+.movie-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.poster-container {
+    position: relative;
+    padding-top: 150%;
+    overflow: hidden;
+}
+
+.movie-poster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.05);
+}
+
+.movie-title {
+    padding: 15px 10px 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.remove-btn {
+    background-color: rgba(255, 0, 0, 0.15);
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 8px 15px;
+    margin: 0 15px 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+    background-color: rgba(255, 0, 0, 0.25);
+}
+
+.empty-wishlist {
+    width: 100%;
+    padding: 40px;
+    background-color: var(--card-bg);
+    border-radius: 18px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
+
+@media (max-width: 992px) {
+    .movie-card {
+        width: calc(25% - 23px);
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-card {
+        width: calc(33.33% - 20px);
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .mood-title {
+        order: -1;
+        width: 100%;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .spacer {
+        display: none;
+    }
+    
+    .back-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .movie-card {
+        width: calc(50% - 15px);
+    }
+}
+
+@media (max-width: 400px) {
+    .movie-card {
+        width: 100%;
+    }
+}
