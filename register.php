@@ -2,77 +2,68 @@
 session_start();
 require_once 'database.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get and sanitize form data
-    $first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
-    $last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $phone_code = $_POST['phone_code'];
-    $phone_number = $_POST['phone_number'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    
-    // Validate inputs
-    $errors = [];
-    
-    if (empty($first_name)) {
-        $errors[] = "First name is required";
-    }
-    
-    if (empty($last_name)) {
-        $errors[] = "Last name is required";
-    }
-    
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Valid email is required";
-    }
-    
-    if (empty($phone_number)) {
-        $errors[] = "Phone number is required";
-    }
-    
-    if (empty($password)) {
-        $errors[] = "Password is required";
-    }
-    
-    if ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match";
-    }
-    
-    // Check if email already exists
-    $pdo = getPDO();
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    $email_exists = $stmt->fetchColumn() > 0;
-    
-    if ($email_exists) {
-        $errors[] = "Email already in use";
-    }
-    
-    // If no errors, create the user
-    if (empty($errors)) {
-        $phone = $phone_code . $phone_number;
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        
-        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone, password) VALUES (?, ?, ?, ?, ?)");
-        
-        if ($stmt->execute([$first_name, $last_name, $email, $phone, $hashed_password])) {
-            $_SESSION['success_message'] = "Registration successful!Now you can choose your movie";
-            header('Location: index.php');
-            exit();
-        } else {
-            $_SESSION['error_message'] = "Registration failed. Please try again.";
-            header('Location: sign_up.php');
-            exit();
-        }
-    } else {
-        $_SESSION['error_message'] = implode("<br>", $errors);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $email = trim($_POST['email']);
+    $phone_code = trim($_POST['phone_code']);
+    $phone_number = trim($_POST['phone_number']);
+    $password = trim($_POST['password']);
+    $confirm_password = trim($_POST['confirm_password']);
+
+    // Combine phone_code and phone_number
+    $phone = $phone_code . $phone_number;
+
+    // Validation
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($phone_code) || empty($phone_number) || empty($password) || empty($confirm_password)) {
+        $_SESSION['error_message'] = 'All fields are required.';
         header('Location: sign_up.php');
         exit();
     }
-}
-else {
-    // If not POST request, redirect to sign up page
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_message'] = 'Invalid email format.';
+        header('Location: sign_up.php');
+        exit();
+    }
+
+    if ($password !== $confirm_password) {
+        $_SESSION['error_message'] = 'Passwords do not match.';
+        header('Location: sign_up.php');
+        exit();
+    }
+
+    try {
+        $pdo = getPDO();
+
+        // Check if email already exists
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
+            $_SESSION['error_message'] = 'Email already registered.';
+            header('Location: sign_up.php');
+            exit();
+        }
+
+        // Hash password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Insert user
+        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'user')");
+        $stmt->execute([$first_name, $last_name, $email, $phone, $password]);
+
+        // Log in the new user
+        $user_id = $pdo->lastInsertId();
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['role'] = 'user';
+        header('Location: index.php');
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = 'Database error: ' . $e->getMessage();
+        header('Location: sign_up.php');
+        exit();
+    }
+} else {
     header('Location: sign_up.php');
     exit();
 }

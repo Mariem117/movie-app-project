@@ -1,18 +1,18 @@
 <?php
-require_once 'database.php';
-$pdo = getPDO(); // Use the connection from database.php
-echo "Database connection successful!";
+session_start();
+require_once '../database.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-$pdo = getPDO(); // Use the connection from database.php
-echo "Database connection successful!";
+// Use the existing PDO connection from database.php
+$pdo = getPDO();
+
 $stmt = $pdo->prepare("SELECT m.* FROM wishlist w JOIN movies m ON w.movie_id = m.id WHERE w.user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,7 +63,7 @@ $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 let countElement = document.getElementById("wishlist-count");
                 countElement.innerText = wishlist.length;
                 if (wishlist.length === 0) {
-                    countElement.parentElement.style.display = 'none';
+                    document.getElementById("wishlist-container").innerHTML = "<p class='empty-wishlist'>Your wishlist is empty. Add some movies to watch later!</p>";
                 }
             }).catch(error => alert(error.message));
         }

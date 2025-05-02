@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'database.php';
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }
@@ -23,7 +23,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="styles/admin.css">
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <?php include '../includes/header.php'; ?>

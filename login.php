@@ -1,32 +1,47 @@
 <?php
 session_start();
-if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
-    exit();
-}
 require_once 'database.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $password = $_POST['password'];
-    
-    // Use the connection from database.php
-    $pdo = getPDO();
-    
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = $user['role'];
-        $_SESSION['user_logged_in'] = $user['role'] === 'user';
-        header('Location: index.php');
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['role'] === 'admin') {
+        header('Location: dashboard.php');
     } else {
-        $_SESSION['error_message'] = "Invalid email or password.";
-        header('Location: login.php');
+        header('Location: wishlist.php');
     }
     exit();
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (empty($email) || empty($password)) {
+        $error = 'Please enter both email and password.';
+    } else {
+        try {
+            $pdo = getPDO();
+            $stmt = $pdo->prepare("SELECT id, email, password, role FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                if ($user['role'] === 'admin') {
+                    header('Location: dashboard.php');
+                } else {
+                    header('Location: wishlist.php');
+                }
+                exit();
+            } else {
+                $error = 'Invalid email or password.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Database error: ' . $e->getMessage();
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -35,29 +50,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Ticket - Log In</title>
-    <link rel="stylesheet" href="sign_up.css">
+    <link rel="stylesheet" href="log_in.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="form-container">
-        <img src="vector-3d-movie-glasses.jpg" alt="Left Image" class="side-image left">
-        <div class="title-box">
-            <h1>Log In</h1>
-        </div>
-        <img src="vector-3d-movie-glasses.jpg" alt="Right Image" class="side-image right">
-        <?php if (isset($_SESSION['error_message'])): ?>
-            <div class="error"><?= htmlspecialchars($_SESSION['error_message']); ?></div>
-            <?php unset($_SESSION['error_message']); ?>
+        <button onclick="location.href='index.php'" class="home-button">⬅ HOME</button>
+        <h2>Log In</h2>
+        <?php if ($error): ?>
+            <p class="error"><?= htmlspecialchars($error); ?></p>
         <?php endif; ?>
-        <?php if (isset($_SESSION['success_message'])): ?>
-            <div class="success"><?= htmlspecialchars($_SESSION['success_message']); ?></div>
-            <?php unset($_SESSION['success_message']); ?>
-        <?php endif; ?>
-        <form action="login.php" method="POST">
+        <form method="POST" action="">
             <input type="email" name="email" placeholder="Email *" required>
             <input type="password" name="password" placeholder="Password *" required>
-            <button type="submit">Log In</button>
+            <div class="text-right">
+                <a href="#">Forgot password?</a>
+            </div>
+            <div class="container-login-form-btn">
+                <div class="wrap-login-form-btn">
+                    <button class="login-form-btn">Login</button>
+                </div>
+            </div>
+            <div class="flex-col-c">
+                <span class="txt1">Or Sign Up Using</span>
+                <a href="sign_up.php" class="txt2">Sign Up</a>
+            </div>
+            <div class="flex-c-m">
+                <a href="#" class="login-social-item bg3">
+                    <i class="fab fa-google"></i>
+                </a>
+            </div>
         </form>
-        <p>Don't have an account? <a href="sign_up.php">Sign Up</a></p>
     </div>
 </body>
 </html>
