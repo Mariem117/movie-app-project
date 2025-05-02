@@ -1,15 +1,18 @@
 <?php
-session_start();
 require_once 'database.php';
+$pdo = getPDO(); // Use the connection from database.php
+echo "Database connection successful!";
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
-$pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+$pdo = getPDO(); // Use the connection from database.php
+echo "Database connection successful!";
 $stmt = $pdo->prepare("SELECT m.* FROM wishlist w JOIN movies m ON w.movie_id = m.id WHERE w.user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +25,7 @@ $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="header">
-        <a href="front_pg.php" class="back-btn">⬅ Back</a>
+        <a href="index.php" class="back-btn">⬅ Back</a>
         <span class="mood-title">My Wishlist (<span id="wishlist-count"><?= count($wishlist); ?></span>)</span>
         <div class="spacer"></div>
     </div>

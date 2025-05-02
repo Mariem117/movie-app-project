@@ -5,24 +5,25 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     header('Location: ../auth/login.php');
     exit();
 }
-if (strlen($title) > 255) {
-    die("Title is too long.");
-}
+
+// Get the standardized PDO connection
+$pdo = getPDO();
 
 // Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
-    $title = $conn->real_escape_string($_POST['title']);
+    $title = $_POST['title'];
     if (strlen($title) > 255) {
         die("Title is too long.");
     }
+    
     $year = intval($_POST['year']);
-    $duration = $conn->real_escape_string($_POST['duration']);
+    $duration = $_POST['duration'];
     $rating = floatval($_POST['rating']);
-    $description = $conn->real_escape_string($_POST['description']);
-    $director = $conn->real_escape_string($_POST['director']);
-    $trailer_url = $conn->real_escape_string($_POST['trailer_url']);
-    $mood = $conn->real_escape_string($_POST['mood']);
+    $description = $_POST['description'];
+    $director = $_POST['director'];
+    $trailer_url = $_POST['trailer_url'];
+    $mood = $_POST['mood'];
     
     // Process tags
     $tags = isset($_POST['tags']) ? implode(',', $_POST['tags']) : '';
@@ -50,22 +51,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
     
-    // Insert movie data
+    // Insert movie data using PDO prepared statement
     $insert_query = "INSERT INTO movies (title, year, duration, rating, description, director, trailer_url, mood, tags, poster) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
-    $stmt = $conn->prepare($insert_query);
-    $stmt->bind_param("sisdsssss", $title, $year, $duration, $rating, $description, $director, $trailer_url, $mood, $tags, $poster);
-    
-    if ($stmt->execute()) {
+    try {
+        $stmt = $pdo->prepare($insert_query);
+        $stmt->execute([
+            $title, 
+            $year, 
+            $duration, 
+            $rating, 
+            $description, 
+            $director, 
+            $trailer_url, 
+            $mood, 
+            $tags, 
+            $poster
+        ]);
+        
         $_SESSION['success'] = "Movie added successfully!";
         header("Location: movies.php");
         exit();
-    } else {
-        $_SESSION['error'] = "Failed to add movie: " . $conn->error;
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Failed to add movie: " . $e->getMessage();
     }
-    
-    $stmt->close();
 }
 
 // Get all moods for the dropdown
@@ -80,8 +90,6 @@ $all_tags = [
     'Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Fantasy', 
     'Horror', 'Romance', 'Science Fiction', 'Thriller', 'Animation', 'Documentary'
 ];
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>

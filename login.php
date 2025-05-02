@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role'];
-        $_SESSION['admin_logged_in'] = $user['role'] === 'admin';
-        header('Location: front_pg.php');
+        $_SESSION['user_logged_in'] = $user['role'] === 'user';
+        header('Location: index.php');
     } else {
         $_SESSION['error_message'] = "Invalid email or password.";
         header('Location: login.php');

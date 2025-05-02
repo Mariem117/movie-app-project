@@ -5,8 +5,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }
-$pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// Use the standardized database connection
+$pdo = getPDO();
+
 try {
     $totalMovies = $pdo->query("SELECT COUNT(*) FROM movies")->fetchColumn();
     $totalShowtimes = $pdo->query("SELECT COUNT(*) FROM showtimes")->fetchColumn();
