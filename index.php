@@ -47,22 +47,22 @@ $stmt = $pdo->prepare($query);
     <main>
         <section id="moods">
             <div class="mood-buttons">
-                <button onclick="location.href='movie1_exciting.html'">🎢 Exciting</button>
-                <button onclick="location.href='movie1_thrilling.html'">🎬 Thrilling</button>
-                <button onclick="location.href='movie1_playful.html'">🎈 Playful</button>
-                <button onclick="location.href='movie1_funny.html'">😂 Funny</button>
-                <button onclick="location.href='movie1_suspense.html'">🔍 Suspense</button>
-                <button onclick="location.href='movie1_insight.html'">💡 Insight</button>
-                <button onclick="location.href='movie1_drama.html'">🎭 Drama</button>
-                <button onclick="location.href='movie1_heartwarming.html'">❤️ Heartwarming</button>
-                <button onclick="location.href='movie1_imagination.html'">🌈 Imagination</button>
-                <button onclick="location.href='movie1_reflection.html'">🪞 Reflection</button>
-                <button onclick="location.href='movie1_scary.html'">👻 Scary</button>
-                <button onclick="location.href='movie1_melodic.html'">🎶 Melodic</button>
-                <button onclick="location.href='movie1_intense.html'">🔥 Intense</button>
-                <button onclick="location.href='movie1_romantic.html'">💖 Romantic</button>
-                <button onclick="location.href='movie1_scifi.html'">🚀 Sci-Fi</button>
-                <button onclick="location.href='movie1_classic.html'">🎥 Classic</button>
+                <button onclick="location.href='movie1_exciting.php'">🎢 Exciting</button>
+                <button onclick="location.href='movie1_thrilling.php'">🎬 Thrilling</button>
+                <button onclick="location.href='movie1_playful.php'">🎈 Playful</button>
+                <button onclick="location.href='movie1_funny.php'">😂 Funny</button>
+                <button onclick="location.href='movie1_suspense.php'">🔍 Suspense</button>
+                <button onclick="location.href='movie1_insight.php'">💡 Insight</button>
+                <button onclick="location.href='movie1_drama.php'">🎭 Drama</button>
+                <button onclick="location.href='movie1_heartwarming.php'">❤️ Heartwarming</button>
+                <button onclick="location.href='movie1_imagination.php'">🌈 Imagination</button>
+                <button onclick="location.href='movie1_reflection.php'">🪞 Reflection</button>
+                <button onclick="location.href='movie1_scary.php'">👻 Scary</button>
+                <button onclick="location.href='movie1_melodic.php'">🎶 Melodic</button>
+                <button onclick="location.href='movie1_intense.php'">🔥 Intense</button>
+                <button onclick="location.href='movie1_romantic.php'">💖 Romantic</button>
+                <button onclick="location.href='movie1_scifi.php'">🚀 Sci-Fi</button>
+                <button onclick="location.href='movie1_classic.php'">🎥 Classic</button>
             </div>
         </section>
     </main>

@@ -38,7 +38,7 @@ $showtimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MoodFlix – Réservation</title>
-    <link rel="stylesheet" href="booking_page.css">
+    <link rel="stylesheet" href="booking page.css">
     <link rel="icon" href="images/img.png" type="image/x-icon">
 </head>
 <body>

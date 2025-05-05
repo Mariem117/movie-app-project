@@ -87,8 +87,7 @@ if (!$movie_id) {
                         </div>
                         
                         <div class="action-buttons">
-                            <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>
-                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
+                        <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ body {
     margin: 20px;
     color: #fff;
     font-weight: bold;
-    background: url('background.png');
+    background: url('/movie-app-project/images/image(1).png');
     animation: animatedBackround 120s linear infinite;
 }
 @keyframes fadeIn {
