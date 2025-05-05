@@ -25,9 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$movie_id]);
             $movie_row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $stmt = $pdo->prepare("INSERT INTO bookings (user_id, movie_id, showtime, seats, total_price, booking_date) VALUES (?, ?, ?, ?, ?, CURDATE())");
-            $stmt->execute([$_SESSION['user_id'], $movie_id, $showtime_row['showtime'], $seats, $total_price]);
-
+            $stmt = $pdo->prepare("INSERT INTO bookings (user_id, movie_id, booking_date, showtime, seats, total_price) VALUES (?, ?, CURDATE(), ?, ?, ?)");
+            $stmt->execute([$_SESSION['user_id'], $movie_id, $showtime_time, $seats, $total_price]);
             $_SESSION['booking_details'] = [
                 'movie' => $movie_row['title'],
                 'showtime' => $showtime_row['showtime'],

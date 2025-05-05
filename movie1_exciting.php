@@ -1,3 +1,18 @@
+<?php
+session_start();
+require_once 'database.php';
+$movie_title = 'Mad Max: Fury Road';
+$pdo = getPDO();
+$stmt = $pdo->prepare("SELECT id FROM movies WHERE title = ?");
+$stmt->execute([$movie_title]);
+$movie = $stmt->fetch(PDO::FETCH_ASSOC);
+$movie_id = $movie ? $movie['id'] : null;
+if (!$movie_id) {
+    header('Location: index.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Mood Ticket Booking - Mad Max: Fury Road</title>
     <link rel="icon" href="image(2).png" type="image/x-icon">
-    <link rel="stylesheet" href="/movie-app-project/styles/moviepage.css">
+    <link rel="stylesheet" href="moviepage.css">
 </head>
 <body>
     <div class="header">
@@ -72,8 +87,8 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <button class="book-ticket">Book Ticket</button>
-                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist<a href='wishlist.php'></a></button>
+                            <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>
+                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
                         </div>
                     </div>
                 </div>

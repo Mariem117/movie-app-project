@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 20px;
+    color: #fff;
+    font-weight: bold;
+    background: url('background.png');
+    animation: animatedBackround 120s linear infinite;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animated-title {
+    animation: fadeIn 3s ease-in-out;
+}
+@keyframes animatedBackround{
+    0% {background-position: center;}
+    50%{background-position: right;}
+    100%{background-position: 0% 50%;}
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+.container {
+    margin-top: 20px;
+    display: flex;
+    gap: 40px;
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    width: 900px;
+}
+.movie-info {
+    width: 320px;
+    background: black;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+select {
+    width: 100%;
+    padding: 8px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+.seat-selection {
+    flex: 1;
+    text-align: center;
+    background: #fff;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 500px;
+}
+.seats {
+    display: grid;
+    grid-template-columns: repeat(10, 35px);
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+
+.seat {
+    width: 35px;
+    height: 35px;
+    background: #444;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.seat.available {
+    background: #777;
+}
+
+.seat.available:hover {
+    background: #00c321;
+}
+
+.seat.selected {
+    background: #00c321;
+}
+
+.seat.occupied {
+    background: #e74c3c;
+    cursor: not-allowed;
+}
+.indications {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-item .seat {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+.booknow {
+    background: #00c321;
+    padding: 12px;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+    animation: pulse 1.5s infinite
+}
+.booknow :hover{
+    padding: 12px;
+    background: #00c321;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 50px;
+    cursor: pointer;
+}
