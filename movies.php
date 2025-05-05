@@ -1,116 +1,140 @@
 <?php
-require_once 'database.php';
-
 session_start();
-
-if (!isset($_SESSION['admin_logged_in'])) {
+require_once 'database.php';
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }
+$pdo = getPDO();
 
-$pdo = new PDO($dsn, $username, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// Get movie_id and mood from URL
+$movie_id = filter_input(INPUT_GET, 'movie_id', FILTER_VALIDATE_INT);
+$mood = filter_input(INPUT_GET, 'mood', FILTER_SANITIZE_STRING);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['add_movie'])) {
-        $title = $_POST['title'];
-        $description = $_POST['description'];
-        $release_date = $_POST['release_date'];
-        $sql = "INSERT INTO movies (title, description, release_date) VALUES (?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$title, $description, $release_date]);
-        $_SESSION['success_message'] = "Movie added successfully.";
-    }
-
-    if (isset($_POST['edit_movie'])) {
-        $id = $_POST['id'];
-        $title = $_POST['title'];
-        $description = $_POST['description'];
-        $release_date = $_POST['release_date'];
-        $sql = "UPDATE movies SET title = ?, description = ?, release_date = ? WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$title, $description, $release_date, $id]);
-        $_SESSION['success_message'] = "Movie updated successfully.";
-    }
-
-    if (isset($_POST['delete_movie'])) {
-        $id = $_POST['id'];
-        $sql = "DELETE FROM movies WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $_SESSION['success_message'] = "Movie deleted successfully.";
-    }
+if (!$movie_id || !$mood) {
+    $_SESSION['error_message'] = "Invalid movie or mood.";
+    header('Location: index.php');
+    exit();
 }
 
-$sql = "SELECT * FROM movies";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$movies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
+// Fetch movie details
+$stmt = $pdo->prepare("SELECT * FROM movies WHERE id = ? AND mood = ?");
+$stmt->execute([$movie_id, $mood]);
+$movie = $stmt->fetch(PDO::FETCH_ASSOC);
 
+if (!$movie) {
+    $_SESSION['error_message'] = "Movie not found.";
+    header('Location: index.php');
+    exit();
+}
+
+// Check if movie is in user's wishlist
+$is_in_wishlist = false;
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT id FROM wishlist WHERE user_id = ? AND movie_id = ?");
+    $stmt->execute([$_SESSION['user_id'], $movie_id]);
+    $is_in_wishlist = $stmt->fetch() !== false;
+}
+
+// Handle admin-specific actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_movie']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    try {
+        $stmt = $pdo->prepare("DELETE FROM movies WHERE id = ?");
+        $stmt->execute([$movie_id]);
+        $_SESSION['success_message'] = "Movie deleted successfully.";
+        header('Location: movies.php');
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = "Failed to delete movie: " . $e->getMessage();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Manage Movies</title>
-    <link rel="stylesheet" href="main.css">
+    <title>MoodFlix - <?= htmlspecialchars($movie['title']); ?></title>
+    <link rel="icon" href="images/image(2).png" type="image/x-icon">
+    <link rel="stylesheet" href="styles/moviepage.css">
 </head>
 <body>
-    <h1>Manage Movies</h1>
-
-    <?php
-    if (isset($_SESSION['success_message'])) {
-        echo "<div class='success'>{$_SESSION['success_message']}</div>";
-        unset($_SESSION['success_message']);
-    }
-
-    if (isset($_SESSION['error_message'])) {
-        echo "<div class='error'>{$_SESSION['error_message']}</div>";
-        unset($_SESSION['error_message']);
-    }
-    ?>
-
-    <form method="POST">
-        <h2>Add Movie</h2>
-        <input type="text" name="title" placeholder="Movie Title" required>
-        <textarea name="description" placeholder="Movie Description" required></textarea>
-        <input type="date" name="release_date" required>
-        <button type="submit" name="add_movie">Add Movie</button>
-    </form>
-
-    <h2>Existing Movies</h2>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Release Date</th>
-            <th>Actions</th>
-        </tr>
-        <?php foreach ($movies as $movie): ?>
-        <tr>
-            <td><?php echo htmlspecialchars($movie['title']); ?></td>
-            <td><?php echo htmlspecialchars($movie['description']); ?></td>
-            <td><?php echo htmlspecialchars($movie['release_date']); ?></td>
-            <td>
-                <form method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="<?php echo $movie['id']; ?>">
-                    <button type="submit" name="delete_movie" onclick="return confirm('Are you sure you want to delete this?');">Delete</button>
-                </form>
-                <button onclick="editMovie(<?php echo $movie['id']; ?>, '<?php echo htmlspecialchars($movie['title']); ?>', '<?php echo htmlspecialchars($movie['description']); ?>', '<?php echo htmlspecialchars($movie['release_date']); ?>')">Edit</button>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <script>
-        function editMovie(id, title, description, release_date) {
-            document.querySelector('input[name="id"]').value = id;
-            document.querySelector('input[name="title"]').value = title;
-            document.querySelector('textarea[name="description"]').value = description;
-            document.querySelector('input[name="release_date"]').value = release_date;
-            document.querySelector('button[name="edit_movie"]').style.display = 'block';
-        }
-    </script>
+    <?php include 'includes/header.php'; ?>
+    <div class="header">
+        <button class="change-mood" onclick="location.href='index.php'">⬅ Change Mood</button>
+        <span class="mood-title">🎬 <?= htmlspecialchars($mood); ?> Mood</span>
+        <a href="wishlist.php" class="wish"><button>🎬 Wishlist</button></a>
+    </div>
+    
+    <div class="container">
+        <?php
+        $stmt = $pdo->prepare("SELECT id, title FROM movies WHERE mood = ? AND id != ? LIMIT 2");
+        $stmt->execute([$mood, $movie_id]);
+        $other_movies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $prev_movie = $other_movies[0] ?? null;
+        $next_movie = $other_movies[1] ?? null;
+        ?>
+        <a href="<?= $prev_movie ? 'movie.php?movie_id=' . $prev_movie['id'] . '&mood=' . urlencode($mood) : '#' ?>" class="arrow-nav arrow-prev">‹</a>
+        <a href="<?= $next_movie ? 'movie.php?movie_id=' . $next_movie['id'] . '&mood=' . urlencode($mood) : '#' ?>" class="arrow-nav arrow-next">›</a>
+        
+        <div class="movie-card">
+            <div class="movie-content">
+                <div class="left-column">
+                    <img src="<?= htmlspecialchars($movie['poster'] ?? '../default_poster.jpg'); ?>" alt="<?= htmlspecialchars($movie['title']); ?> Poster" class="movie-poster">
+                    
+                    <div class="actors">
+                        <h3>Actors</h3>
+                        <p><?= htmlspecialchars($movie['actors'] ?? 'Cast not specified'); ?></p>
+                    </div>
+                    
+                    <div class="director">
+                        <h3>Director</h3>
+                        <p><?= htmlspecialchars($movie['director'] ?? 'Unknown'); ?></p>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <div class="movie-details">
+                        <h2 class="movie-title"><?= htmlspecialchars($movie['title']); ?></h2>
+                        <p class="movie-info"><?= htmlspecialchars($movie['year'] ?? 'N/A'); ?> | <?= htmlspecialchars($movie['duration'] ?? 'N/A'); ?> | <span class="rating"><?= str_repeat('★', floor($movie['rating'] ?? 0)) . str_repeat('☆', 5 - floor($movie['rating'] ?? 0)); ?></span></p>
+                        <div class="tags">
+                            <?php foreach (explode(',', $movie['tags'] ?? '') as $tag): ?>
+                                <span class="tag"><?= htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <p class="description"><?= htmlspecialchars($movie['description'] ?? 'No description available.'); ?> <a href="#" class="read-more">Read More</a></p>
+                        
+                        <div class="trailer-container">
+                            <h3>Movie Trailer</h3>
+                            <iframe class="movie-trailer" src="<?= htmlspecialchars($movie['trailer_url'] ?? ''); ?>" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <a href="book_ticket.php?movie_id=<?= $movie_id; ?>" class="book-ticket"><button>Book Ticket</button></a>
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                                <form action="update_wishlist.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="movie_id" value="<?= $movie_id; ?>">
+                                    <input type="hidden" name="action" value="<?= $is_in_wishlist ? 'remove' : 'add'; ?>">
+                                    <button type="submit" class="wishlist-btn <?= $is_in_wishlist ? 'in-wishlist' : ''; ?>">
+                                        <?= $is_in_wishlist ? 'In Wishlist' : 'Add to Wishlist'; ?>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <a href="login.php"><button class="wishlist-btn">Add to Wishlist</button></a>
+                            <?php endif; ?>
+                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                <a href="addmovie.php?edit_id=<?= $movie_id; ?>" class="admin-btn"><button>Edit Movie</button></a>
+                                <form action="" method="POST" style="display:inline;">
+                                    <button type="submit" name="delete_movie" class="admin-btn" onclick="return confirm('Are you sure you want to delete this movie?');">Delete Movie</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php include '../includes/footer.php'; ?>
 </body>
 </html>

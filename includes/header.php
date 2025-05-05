@@ -1,9 +1,12 @@
+<?php
+session_start();
+?>
 <header>
     <nav>
-        <a href="front_pg.php">Home</a>
+        <a href="../index.php">Home</a>
         <?php if (isset($_SESSION['user_id'])): ?>
             <a href="logout.php">Log Out</a>
-            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+            <?php if ($_SESSION['role'] === 'admin'): ?>
                 <a href="dashboard.php">Admin Dashboard</a>
             <?php endif; ?>
         <?php else: ?>

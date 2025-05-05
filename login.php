@@ -22,24 +22,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $pdo = getPDO();
-            $stmt = $pdo->prepare("SELECT id, email, password, role FROM users WHERE email = ?");
-            $stmt->execute([$email]);
+            $stmt = $pdo->prepare("SELECT id, email, password, role FROM users WHERE email = :email");
+            $stmt->execute(['email' => $email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($password, $user['password'])) {
+            error_log("Login attempt for email: $email, User found: " . ($user ? 'Yes' : 'No'));
+
+            if (!$user) {
+                $error = 'No user found with email: ' . htmlspecialchars($email);
+            } elseif (!password_verify($password, $user['password'])) {
+                $error = 'Password does not match for email: ' . htmlspecialchars($email);
+                error_log("Password verification failed for email: $email");
+            } else {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
+                error_log("Login successful for email: $email, Role: {$user['role']}");
                 if ($user['role'] === 'admin') {
                     header('Location: dashboard.php');
                 } else {
                     header('Location: wishlist.php');
                 }
                 exit();
-            } else {
-                $error = 'Invalid email or password.';
             }
         } catch (PDOException $e) {
             $error = 'Database error: ' . $e->getMessage();
+            error_log("Database error during login: " . $e->getMessage());
         }
     }
 }

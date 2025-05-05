@@ -1,15 +1,14 @@
 body {
-    background: url('image (1).png');
+    background-image: url('/movie-app-project/images/image (1).png');
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-size: 200%;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    animation: animatedBackground 120s linear infinite;
 }
 
 @keyframes animatedBackground {
@@ -17,24 +16,24 @@ body {
     50% { background-position: right; }
     100% { background-position: 0% 50%; }
 }
-
 .login-container {
     background: white;
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     width: 30%;
-    min-height: 50%;
+    min-height: 75%;
     border: 1px solid #ccc;
 }
 
-.login-container h2 {
+.logi,-container h2 {
     text-align: center;
     text-shadow: 2px 2px 4px #00c321;
     margin-top: 10%;
     margin-bottom: 20px;
     font-size: 3em;
 }
+
 
 .login-container input, .login-container button {
     width: 94%;

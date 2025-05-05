@@ -6,6 +6,7 @@ CREATE TABLE users (
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     email VARCHAR(100) UNIQUE,
+    phone_code VARCHAR(10),
     phone VARCHAR(20),
     password VARCHAR(255),
     role ENUM('user', 'admin') DEFAULT 'user'
@@ -52,6 +53,16 @@ CREATE TABLE wishlist (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (movie_id) REFERENCES movies(id)
 );
+CREATE TABLE cinemas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    city VARCHAR(100)
+);
+INSERT INTO cinemas (name, city) VALUES
+    ('Pathé Tunis City', 'Tunis'),
+    ('Pathé Azur City', 'Tunis'),
+    ('Pathé Mall of Sousse', 'Sousse'),
+    ('Sousse', 'Sousse');
 
 INSERT INTO users (first_name, last_name, email, password, role)
 VALUES ('Admin', 'User', 'admin@gmail.com', '$2y$10$hXPGZvOY9aKnJHy3OIBi9ePZL4FJV9wGzvGDsP.A/lbMy44OHiu5.', 'admin');

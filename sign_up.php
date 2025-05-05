@@ -11,15 +11,15 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Ticket - Sign Up</title>
-    <link rel="stylesheet" href="sign_up.css">
+    <link rel="stylesheet" href="styles/sign_up.css">
 </head>
 <body>
     <div class="form-container">
-        <img src="vector-3d-movie-glasses.jpg" alt="Left Image" class="side-image left">
+        <img src="images/vector-3d-movie-glasses.jpg" alt="Left Image" class="side-image left">
         <div class="title-box">
             <h1>Sign Up</h1>
         </div>
-        <img src="vector-3d-movie-glasses.jpg" alt="Right Image" class="side-image right">
+        <img src="images/vector-3d-movie-glasses.jpg" alt="Right Image" class="side-image right">
         <?php if (isset($_SESSION['error_message'])): ?>
             <div class="error"><?= htmlspecialchars($_SESSION['error_message']); ?></div>
             <?php unset($_SESSION['error_message']); ?>

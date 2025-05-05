@@ -1,13 +1,12 @@
 <?php
 session_start();
-require_once '../database.php';
+require_once 'database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-// Use the existing PDO connection from database.php
 $pdo = getPDO();
 
 $stmt = $pdo->prepare("SELECT m.* FROM wishlist w JOIN movies m ON w.movie_id = m.id WHERE w.user_id = ?");
@@ -20,8 +19,8 @@ $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist</title>
-    <link rel="icon" href="image(2).png" type="x-icon">
-    <link rel="stylesheet" href="wishlist.css">
+    <link rel="icon" href="images/image(2).png" type="x-icon">
+    <link rel="stylesheet" href="styles/wishlist.css">
 </head>
 <body>
     <div class="header">

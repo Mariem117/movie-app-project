@@ -1,6 +1,5 @@
-
 body {
-    background-image: url('image\ \(1\).png');
+    background-image: url('/movie-app-project/images/image_(1).png');
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -10,49 +9,64 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-
 }
 
 .form-container {
     background: white;
-    padding: 40px; /* Increased padding */
+    padding: 40px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 400px;
-    min-height: 500px; /* Increased height */
-    border: 1px solid #ccc; /* Added border */
+    min-height: 500px;
+    border: 1px solid #ccc;
+    position: relative;
 }
 
-.form-container h1 {
+.title-box {
     text-align: center;
-    text-shadow: 2px 2px 4px #00c321;
-    margin-top:0;
     margin-bottom: 20px;
-    font-size: 3 em;
 }
+
+.title-box h1 {
+    text-shadow: 2px 2px 4px #00c321;
+    margin: 0;
+    font-size: 3em;
+}
+
 .side-image {
-    width: 50px; /* Adjust the width as needed */
+    width: 50px;
     height: auto;
-    position: absolute; /* Position the images absolutely */
-    top:16%; /* Center vertically */
-    transform: translateY(-50%); /* Center vertically */
-   
+    position: absolute;
+    top: 10%;
+    transform: translateY(-50%);
 }
 
 .side-image.left {
-    left: 35.5%;
-    
+    left: -60px;
 }
 
 .side-image.right {
-    right: 35.5%;
+    right: -60px;
 }
-.form-container input, select, button {
-    width: 94%;
+
+.error {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.form-container input,
+.form-container select,
+.form-container button {
+    width: 100%;
     padding: 12px;
     margin: 10px 0;
-    border: 1px solid #00c321f8;
+    border: 1px solid #00c321;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 .phone-container {
@@ -69,23 +83,41 @@ body {
 }
 
 .form-container button {
-    padding: 15px;
     background-color: #00c321;
     color: white;
     border: none;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    width: auto; /* Allow the button to adjust its size based on content */
-    display: block; /* Make it block-level to use margin auto */
-    margin: 0 auto; /* Center the button */
-    
+    padding: 15px;
 }
 
 .form-container button:hover {
     background-color: #00fa2a;
 }
+
 .form-container p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-container a {
+    color: #00c321;
     text-decoration: none;
-    margin-top:20px;
+}
+
+.form-container a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .side-image {
+        display: none;
+    }
 }

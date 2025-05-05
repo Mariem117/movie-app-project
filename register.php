@@ -49,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert user
-        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'user')");
-        $stmt->execute([$first_name, $last_name, $email, $phone, $password]);
+        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email,phone_code, phone, password, role) VALUES (?, ?, ?, ?, ?, 'user')");
+        $stmt->execute([$first_name, $last_name, $email,$phone_code, $phone, $hashed_password]);
 
         // Log in the new user
         $user_id = $pdo->lastInsertId();

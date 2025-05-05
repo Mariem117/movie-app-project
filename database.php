@@ -30,4 +30,4 @@ function getPDO() {
     global $db;
     return $db->getConnection();
 }
-?>
+

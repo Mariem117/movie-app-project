@@ -5,7 +5,7 @@
 }
 
 body {
-    background: url('image (1).png');
+    background: url('/movie-app-project/images/image (1).png');
     background-size: 200%;
     background-position: center;
     font-family: 'Helvetica Neue', sans-serif;
@@ -111,6 +111,43 @@ header p {
 
 .side-image.right {
     right: 25.5%;
+} 
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+.movie {
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+.movie img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+.movie h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+.movie p {
+    font-size: 0.9em;
+    color: #666;
+}
+.movie a {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 16px;
+    background: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+}
+.movie a:hover {
+    background: #0056b3;
 }
 
 .mood-buttons {

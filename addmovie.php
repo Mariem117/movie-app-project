@@ -1,20 +1,19 @@
 <?php
-require_once __DIR__ . '/database.php';
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header('Location: ../auth/login.php');
+require_once 'database.php';
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: login.php');
     exit();
 }
 
-// Get the standardized PDO connection
 $pdo = getPDO();
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $title = $_POST['title'];
     if (strlen($title) > 255) {
-        die("Title is too long.");
+        $_SESSION['error_message'] = "Title is too long.";
+        header("Location: addmovie.php");
+        exit();
     }
     
     $year = intval($_POST['year']);
@@ -24,74 +23,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $director = $_POST['director'];
     $trailer_url = $_POST['trailer_url'];
     $mood = $_POST['mood'];
-    
-    // Process tags
     $tags = isset($_POST['tags']) ? implode(',', $_POST['tags']) : '';
     
-    // Process poster upload
     $poster = '';
     if (isset($_FILES['poster']) && $_FILES['poster']['error'] === 0) {
         $upload_dir = '../uploads/posters/';
-        
-        // Create directory if it doesn't exist
         if (!file_exists($upload_dir)) {
             mkdir($upload_dir, 0777, true);
         }
-        
         $file_name = time() . '_' . $_FILES['poster']['name'];
         $target_file = $upload_dir . $file_name;
-        
-        // Move uploaded file
         if (move_uploaded_file($_FILES['poster']['tmp_name'], $target_file)) {
-            $poster = 'uploads/posters/' . $file_name;
+            $poster = 'Uploads/posters/' . $file_name;
         } else {
-            $_SESSION['error'] = "Failed to upload poster!";
-            header("Location: add_movie.php");
+            $_SESSION['error_message'] = "Failed to upload poster!";
+            header("Location: addmovie.php");
             exit();
         }
     }
     
-    // Insert movie data using PDO prepared statement
     $insert_query = "INSERT INTO movies (title, year, duration, rating, description, director, trailer_url, mood, tags, poster) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $pdo->prepare($insert_query);
-        $stmt->execute([
-            $title, 
-            $year, 
-            $duration, 
-            $rating, 
-            $description, 
-            $director, 
-            $trailer_url, 
-            $mood, 
-            $tags, 
-            $poster
-        ]);
-        
-        $_SESSION['success'] = "Movie added successfully!";
+        $stmt->execute([$title, $year, $duration, $rating, $description, $director, $trailer_url, $mood, $tags, $poster]);
+        $_SESSION['success_message'] = "Movie added successfully!";
         header("Location: movies.php");
         exit();
     } catch (PDOException $e) {
-        $_SESSION['error'] = "Failed to add movie: " . $e->getMessage();
+        $_SESSION['error_message'] = "Failed to add movie: " . $e->getMessage();
+        header("Location: addmovie.php");
+        exit();
     }
 }
 
-// Get all moods for the dropdown
-$moods = [
-    'Exciting', 'Thrilling', 'Playful', 'Funny', 'Suspense', 
-    'Insight', 'Drama', 'Heartwarming', 'Imagination', 'Reflection', 
-    'Scary', 'Melodic', 'Intense', 'Romantic', 'Sci-Fi', 'Classic'
-];
-
-// Get all tags for the checkboxes
-$all_tags = [
-    'Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Fantasy', 
-    'Horror', 'Romance', 'Science Fiction', 'Thriller', 'Animation', 'Documentary'
-];
+$moods = ['Exciting', 'Thrilling', 'Playful', 'Funny', 'Suspense', 'Insight', 'Drama', 'Heartwarming', 'Imagination', 'Reflection', 'Scary', 'Melodic', 'Intense', 'Romantic', 'Sci-Fi', 'Classic'];
+$all_tags = ['Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'Animation', 'Documentary'];
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,95 +79,80 @@ $all_tags = [
                 <ul>
                     <li><a href="dashboard.php">Dashboard</a></li>
                     <li class="active"><a href="movies.php">Movies</a></li>
-                    <li><a href="users.php">Users</a></li>
+                    <li><a href="user.php">Users</a></li>
                     <li><a href="bookings.php">Bookings</a></li>
                     <li><a href="showtimes.php">Showtimes</a></li>
-                    <li><a href="../logout.php">Logout</a></li>
+                    <li><a href="logout.php">Logout</a></li>
                 </ul>
             </nav>
         </aside>
-        
         <main class="content">
             <header>
                 <h1>Add New Movie</h1>
                 <a href="movies.php" class="btn back-btn">Back to Movies</a>
             </header>
-            
-            <?php if (isset($_SESSION['error'])): ?>
+            <?php if (isset($_SESSION['error_message'])): ?>
                 <div class="alert error">
-                    <?php 
-                    echo $_SESSION['error']; 
-                    unset($_SESSION['error']);
-                    ?>
+                    <?= htmlspecialchars($_SESSION['error_message']); ?>
+                    <?php unset($_SESSION['error_message']); ?>
                 </div>
             <?php endif; ?>
-            
             <div class="form-container">
-                <form action="add_movie.php" method="POST" enctype="multipart/form-data">
+                <form action="addmovie.php" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="title">Title *</label>
                         <input type="text" id="title" name="title" required>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="year">Year *</label>
                             <input type="number" id="year" name="year" min="1900" max="2099" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="duration">Duration (e.g., 2H 30Mins) *</label>
                             <input type="text" id="duration" name="duration" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="rating">Rating (0-5) *</label>
                             <input type="number" id="rating" name="rating" min="0" max="5" step="0.1" required>
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label for="description">Description *</label>
                         <textarea id="description" name="description" rows="4" required></textarea>
                     </div>
-                    
                     <div class="form-group">
                         <label for="director">Director(s) *</label>
                         <input type="text" id="director" name="director" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="poster">Poster Image</label>
                         <input type="file" id="poster" name="poster" accept="image/*">
                     </div>
-                    
                     <div class="form-group">
                         <label for="trailer_url">YouTube Trailer URL</label>
                         <input type="text" id="trailer_url" name="trailer_url" placeholder="e.g., https://www.youtube.com/embed/TcMBFSGVi1c">
                     </div>
-                    
                     <div class="form-group">
                         <label for="mood">Mood *</label>
                         <select id="mood" name="mood" required>
                             <option value="">Select Mood</option>
                             <?php foreach ($moods as $mood): ?>
-                                <option value="<?php echo $mood; ?>"><?php echo $mood; ?></option>
+                                <option value="<?= $mood; ?>"><?= $mood; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label>Tags</label>
                         <div class="tags-container">
                             <?php foreach ($all_tags as $tag): ?>
                                 <div class="tag-checkbox">
-                                    <input type="checkbox" id="tag_<?php echo $tag; ?>" name="tags[]" value="<?php echo $tag; ?>">
-                                    <label for="tag_<?php echo $tag; ?>"><?php echo $tag; ?></label>
+                                    <input type="checkbox" id="tag_<?= $tag; ?>" name="tags[]" value="<?= $tag; ?>">
+                                    <label for="tag_<?= $tag; ?>"><?= $tag; ?></label>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    
                     <div class="form-actions">
                         <button type="submit" class="btn submit-btn">Add Movie</button>
                         <a href="movies.php" class="btn cancel-btn">Cancel</a>
