@@ -1,47 +1,71 @@
 <?php
 session_start();
 require_once 'database.php';
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
-    exit();
-}
-$pdo = getPDO();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'admin')");
-    $stmt->execute(['New', 'Admin', $email, '+21600000000', $password]);
-    $_SESSION['success_message'] = 'Admin created successfully.';
-    header('Location: user.php');
-    exit();
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $password = $_POST['password'];
+
+    // Basic validation
+    if (!$email || !$password) {
+        $_SESSION['error_message'] = "Email and password are required.";
+        header('Location: add_admin.php');
+        exit();
+    }
+
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_message'] = "Invalid email format.";
+        header('Location: add_admin.php');
+        exit();
+    }
+
+    // Check if email already exists
+    $pdo = getPDO();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    if ($stmt->fetchColumn() > 0) {
+        $_SESSION['error_message'] = "Email already exists.";
+        header('Location: add_admin.php');
+        exit();
+    }
+
+    // Hash password
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    // Insert new admin
+    $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, 'admin')");
+    try {
+        $stmt->execute([$email, $hashed_password]);
+        $_SESSION['success_message'] = "Admin account created successfully.";
+        header('Location: dashboard.php');
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = "Error creating admin account: " . $e->getMessage();
+        header('Location: add_admin.php');
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodFlix - Add Admin</title>
-    <link rel="stylesheet" href="admin.css">
+    <title>Add Admin</title>
+    <link rel="stylesheet" href="sign_up.css">
 </head>
 <body>
-    <?php include '../includes/header.php'; ?>
-    <main>
-        <div class="container">
-            <h2>Add New Admin</h2>
-            <form action="add_admin.php" method="POST">
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit">Create Admin</button>
-            </form>
-        </div>
-    </main>
-    <?php include '../includes/footer.php'; ?>
+<div class="form-container">
+    <h1>Add New Admin</h1>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="error"><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+    <form action="add_admin.php" method="POST">
+        <input type="email" name="email" placeholder="Email *" required>
+        <input type="password" name="password" placeholder="Password *" required>
+        <button type="submit">Add Admin</button>
+    </form>
+</div>
 </body>
 </html>

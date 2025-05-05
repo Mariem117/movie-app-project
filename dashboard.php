@@ -1,11 +1,13 @@
 <?php
 session_start();
 require_once 'database.php';
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header('Location: admin_login.php');
     exit();
 }
 
+// Use the standardized database connection
 $pdo = getPDO();
 
 try {
@@ -25,17 +27,11 @@ try {
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <?php
-    if (file_exists('includes/header.php')) {
-        include 'includes/header.php';
-    } else {
-        echo '<nav><a href="index.php">Home</a> <a href="logout.php">Log Out</a></nav>';
-    }
-    ?>
+    <?php include '../includes/header.php'; ?>
     <div class="dashboard">
         <h1>Admin Dashboard</h1>
         <?php if (isset($_SESSION['error_message'])): ?>
-            <div class="error"><?= htmlspecialchars($_SESSION['error_message']); ?></div>
+            <div class="error"><?= htmlspecialchars($_SESSION['error_message']) ?></div>
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
         <div class="stats-container">
@@ -55,19 +51,13 @@ try {
         <div class="quick-links">
             <h2>Quick Links</h2>
             <ul>
-                <li><a href="movies.php">Manage Movies</a></li>
+                <li><a href="addmovies.php">Manage Movies</a></li>
                 <li><a href="showtimes.php">Manage Showtimes</a></li>
-                <li><a href="user.php">Manage Users</a></li>
+                <li><a href="users.php">Manage Users</a></li>
                 <li><a href="bookings.php">Manage Bookings</a></li>
             </ul>
         </div>
     </div>
-    <?php
-    if (file_exists('includes/footer.php')) {
-        include 'includes/footer.php';
-    } else {
-        echo '<footer><p>&copy; ' . date("Y") . ' Movie Ticket Booking. All rights reserved.</p></footer>';
-    }
-    ?>
+    <?php include '../includes/footer.php'; ?>
 </body>
 </html>

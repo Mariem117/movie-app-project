@@ -7,7 +7,7 @@ body {
     margin: 20px;
     color: #fff;
     font-weight: bold;
-    background: url('/movie-app-project/images/image(1).png');
+    background: url('image (1).png');
     animation: animatedBackround 120s linear infinite;
 }
 @keyframes fadeIn {
@@ -126,7 +126,7 @@ select {
     cursor: pointer;
     animation: pulse 1.5s infinite
 }
-.booknow :hover{
+.booknow:hover {
     padding: 12px;
     background: #00c321;
     color: white;

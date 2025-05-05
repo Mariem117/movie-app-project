@@ -10,7 +10,6 @@ session_start();
                 <a href="dashboard.php">Admin Dashboard</a>
             <?php endif; ?>
         <?php else: ?>
-            <a href="sign_up.php">Sign Up</a>
             <a href="login.php">Log In</a>
         <?php endif; ?>
     </nav>

@@ -38,13 +38,13 @@ $showtimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MoodFlix – Réservation</title>
-    <link rel="stylesheet" href="booking page.css">
-    <link rel="icon" href="images/img.png" type="image/x-icon">
+    <link rel="stylesheet" href="book_ticket.css">
+    <link rel="icon" href="img.png" type="x-icon">
 </head>
 <body>
     <div class="container">
         <div class="movie-info">
-            <img src="<?= htmlspecialchars($movie['poster'] ?? 'images/default_poster.jpg') ?>" alt="<?= htmlspecialchars($movie['title']) ?>" class="poster">
+            <img src="<?= htmlspecialchars($movie['poster'] ?? 'default_poster.jpg') ?>" alt="<?= htmlspecialchars($movie['title']) ?>" class="poster">
             <div class="selectors">
                 <label>Cinéma :
                     <select name="cinema_id" id="cinema-select" required>
@@ -142,10 +142,10 @@ $showtimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 // Initialize seat grid
                 const getSeatImage = (status) => {
                     switch (status) {
-                        case 'available': return "images/chair_available.png";
-                        case 'selected': return "images/chair_selected.png";
-                        case 'occupied': return "images/chair_occupied.png";
-                        default: return "images/chair_available.png";
+                        case 'available': return "chair available.png";
+                        case 'selected': return "chair selected.png";
+                        case 'occupied': return "chair occupied.png";
+                        default: return "chair available.png";
                     }
                 };
                 

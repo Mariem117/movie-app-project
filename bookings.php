@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Page</title>
     <link rel="stylesheet" href="ticket_page.css">
-    <link rel="icon" href="../img.png" type="image/x-icon">
+    <link rel="icon" href="img.png" type="x-icon">
 </head>
 <body>
     <div class="payment-container">
@@ -60,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <button class="prev-button" onclick="window.location.href='book_ticket.php?movie_id=<?= htmlspecialchars($_POST['movie_id'] ?? 1); ?>'">Previous</button>
         <h2>Payment Method</h2>
         <div class="card-container">
-            <img src="images/cartenoir.png" alt="Carte Noir" class="payment-card">
-            <img src="images/cartebleu.png" alt="Carte Bleu" class="payment-card">
+            <img src="cartenoir.png" alt="Carte Noir" class="payment-card">
+            <img src="cartebleu.png" alt="Carte Bleu" class="payment-card">
         </div>
         <h2 class="payment-title">Payment Details</h2>
         <form class="payment-form" action="confirmation.php" method="POST">
