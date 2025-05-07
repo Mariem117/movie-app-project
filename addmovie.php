@@ -67,7 +67,7 @@ $all_tags = ['Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Fantasy', 'Horr
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Movie - MoodFlix Admin</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="addmovie.css">
 </head>
 <body>
     <div class="admin-container">
@@ -80,7 +80,6 @@ $all_tags = ['Action', 'Adventure', 'Comedy', 'Crime', 'Drama', 'Fantasy', 'Horr
                     <li><a href="dashboard.php">Dashboard</a></li>
                     <li class="active"><a href="movies.php">Movies</a></li>
                     <li><a href="user.php">Users</a></li>
-                    <li><a href="bookings.php">Bookings</a></li>
                     <li><a href="showtimes.php">Showtimes</a></li>
                     <li><a href="logout.php">Logout</a></li>
                 </ul>

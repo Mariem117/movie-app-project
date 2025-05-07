@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    background: url('image(1).png');
+    background: url('/movie-app-project/images/image (1).png');
     animation: animatedBackround 120s linear infinite;
 
 }
@@ -121,7 +121,6 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    animation: pulse 1.5s infinite
 }
 
 .pay-now:hover {

@@ -48,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Hash password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insert user
-        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email,phone_code, phone, password, role) VALUES (?, ?, ?, ?, ?, 'user')");
-        $stmt->execute([$first_name, $last_name, $email,$phone_code, $phone, $hashed_password]);
+        // Fixed SQL statement - matching the number of parameters with placeholders
+        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone_code, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, 'user')");
+        $stmt->execute([$first_name, $last_name, $email, $phone_code, $phone, $hashed_password]);
 
         // Log in the new user
         $user_id = $pdo->lastInsertId();

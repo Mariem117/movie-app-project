@@ -2,85 +2,54 @@
 session_start();
 require_once 'database.php';
 
-header('Content-Type: application/json');
-
+// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not authenticated']);
+    http_response_code(401);
+    echo json_encode(['error' => 'User not logged in']);
     exit();
 }
 
+// Get JSON data from request
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!isset($data['movie_id']) || !isset($data['action'])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Missing required parameters']);
+    exit();
+}
+
+$movie_id = $data['movie_id'];
+$action = $data['action'];
+$user_id = $_SESSION['user_id'];
+
+// Connect to database
 $pdo = getPDO();
 
-// Check if this is an AJAX request
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-// Get input data - support both form data and JSON
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle form-encoded data
-    if (isset($_POST['movie_id']) && isset($_POST['action'])) {
-        $movie_id = filter_input(INPUT_POST, 'movie_id', FILTER_VALIDATE_INT);
-        $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
-    } 
-    // Handle JSON data
-    else {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $movie_id = filter_var($input['movie_id'] ?? null, FILTER_VALIDATE_INT);
-        $action = filter_var($input['action'] ?? null, FILTER_SANITIZE_STRING);
-    }
-    
-    if (!$movie_id) {
-        echo json_encode(['success' => false, 'message' => 'Invalid movie ID']);
-        exit();
-    }
-    
-    // Check if movie exists
-    $stmt = $pdo->prepare("SELECT id FROM movies WHERE id = ?");
-    $stmt->execute([$movie_id]);
-    if (!$stmt->fetch()) {
-        echo json_encode(['success' => false, 'message' => 'Movie not found']);
-        exit();
-    }
-    
-    try {
-        if ($action === 'add') {
-            // Check if already in wishlist
-            $stmt = $pdo->prepare("SELECT id FROM wishlist WHERE user_id = ? AND movie_id = ?");
-            $stmt->execute([$_SESSION['user_id'], $movie_id]);
-            if (!$stmt->fetch()) {
-                // Add to wishlist
-                $stmt = $pdo->prepare("INSERT INTO wishlist (user_id, movie_id) VALUES (?, ?)");
-                $stmt->execute([$_SESSION['user_id'], $movie_id]);
-            }
-            
-            $response = ['success' => true, 'message' => 'Movie added to wishlist'];
-        } 
-        elseif ($action === 'remove') {
-            // Remove from wishlist
-            $stmt = $pdo->prepare("DELETE FROM wishlist WHERE user_id = ? AND movie_id = ?");
-            $stmt->execute([$_SESSION['user_id'], $movie_id]);
-            
-            $response = ['success' => true, 'message' => 'Movie removed from wishlist'];
-        } 
-        else {
-            $response = ['success' => false, 'message' => 'Invalid action'];
+try {
+    if ($action === 'add') {
+        // Check if entry already exists
+        $check_stmt = $pdo->prepare("SELECT 1 FROM wishlist WHERE user_id = ? AND movie_id = ?");
+        $check_stmt->execute([$user_id, $movie_id]);
+        
+        if (!$check_stmt->fetchColumn()) {
+            // Insert new wishlist item
+            $stmt = $pdo->prepare("INSERT INTO wishlist (user_id, movie_id) VALUES (?, ?)");
+            $stmt->execute([$user_id, $movie_id]);
         }
-    } 
-    catch (PDOException $e) {
-        $response = ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+        
+        echo json_encode(['status' => 'success', 'message' => 'Movie added to wishlist']);
+    } elseif ($action === 'remove') {
+        // Remove wishlist item
+        $stmt = $pdo->prepare("DELETE FROM wishlist WHERE user_id = ? AND movie_id = ?");
+        $stmt->execute([$user_id, $movie_id]);
+        
+        echo json_encode(['status' => 'success', 'message' => 'Movie removed from wishlist']);
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid action']);
     }
-    
-    // Return response
-    echo json_encode($response);
-    
-    // If not AJAX, redirect back
-    if (!$isAjax && isset($_SERVER['HTTP_REFERER'])) {
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
-        exit();
-    }
-}
-else {
-    // Not a POST request
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
 ?>

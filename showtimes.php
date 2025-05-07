@@ -43,7 +43,7 @@ $movies = $pdo->query("SELECT id, title FROM movies")->fetchAll(PDO::FETCH_ASSOC
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Showtimes</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="showtimes.css">
 </head>
 <body>
     <h1>Manage Showtimes</h1>
@@ -83,5 +83,6 @@ $movies = $pdo->query("SELECT id, title FROM movies")->fetchAll(PDO::FETCH_ASSOC
             </tr>
         <?php endforeach; ?>
     </table>
+    <a href="dashboard.php">Back to Dashboard</a>
 </body>
 </html>

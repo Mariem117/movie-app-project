@@ -115,7 +115,7 @@ $showtimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="hidden" name="cinema_id" id="selected-cinema-id">
                     <input type="hidden" name="seats" id="selected-seats">
                     <input type="hidden" name="total_price" id="calculated-price">
-                    <button type="submit" class="booknow" id="book-button" disabled>Book Now</button>
+                    <button type="submit" class="booknow" id="book-button" >Book Now</button>
                 </form>
             <?php endif; ?>
         </div>

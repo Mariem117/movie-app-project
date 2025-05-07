@@ -3,7 +3,7 @@ class Database {
     private $host = 'localhost';
     private $dbname = 'moviemood';
     private $username = 'root';
-    private $password = ''; // Enter your actual MySQL password here
+    private $password = ''; 
     private $conn;
 
     public function __construct() {

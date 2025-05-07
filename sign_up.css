@@ -39,14 +39,15 @@ body {
     position: absolute;
     top: 10%;
     transform: translateY(-50%);
+    size: 30px;
 }
 
 .side-image.left {
-    left: -60px;
-}
+    left: 30px;
 
+}
 .side-image.right {
-    right: -60px;
+    right: 30px;
 }
 
 .error {
@@ -74,7 +75,7 @@ body {
     gap: 10px;
 }
 
-.phone-container select {
+.phone-container input {
     width: 30%;
 }
 

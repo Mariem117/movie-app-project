@@ -1,3 +1,17 @@
+<?php
+session_start();
+require_once 'database.php';
+$movie_title = 'Rush Hour';
+$pdo = getPDO();
+$stmt = $pdo->prepare("SELECT id FROM movies WHERE title = ?");
+$stmt->execute([$movie_title]);
+$movie = $stmt->fetch(PDO::FETCH_ASSOC);
+$movie_id = $movie ? $movie['id'] : null;
+if (!$movie_id) {
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,12 +23,12 @@
 </head>
 <body>
     <div class="header">
-        <button class="change-mood" onclick="location.href='front_pg.html'">⬅ Change Mood</button>        <span class="mood-title">😂 Funny Mood</span>
-        <a href="wishlist.html" class="wish"><button>🎬 Wishlist</button></a>
+        <button class="change-mood" onclick="location.href='index.php'">⬅ Change Mood</button>        <span class="mood-title">😂 Funny Mood</span>
+        <a href="wishlist.php" class="wish"><button>🎬 Wishlist</button></a>
     </div>
     
     <div class="container">
-        <a href="movie1_funny.html" class="arrow-nav arrow-prev">‹</a>
+        <a href="movie1_funny.php" class="arrow-nav arrow-prev">‹</a>
         <a href="#" class="arrow-nav arrow-next">›</a>
         
         <div class="movie-card">
@@ -72,8 +86,8 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <button class="book-ticket">Book Ticket</button>
-                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist<a href='wishlist.php'></a></button>
+                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
+                            <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>
                         </div>
                     </div>
                 </div>

@@ -51,9 +51,10 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user']) && is
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="user.css">
 </head>
 <body>
+    <a href="dashboard.php">Back to Dashboard</a>
     <h1>User Management</h1>
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class='success'><?= htmlspecialchars($_SESSION['success_message']); ?></div>
@@ -63,6 +64,7 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user']) && is
         <div class='error'><?= htmlspecialchars($_SESSION['error_message']); ?></div>
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
+    
     <table>
         <thead>
             <tr>
@@ -96,6 +98,7 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user']) && is
             <?php endif; ?>
         </tbody>
     </table>
-    <a href="dashboard.php">Back to Dashboard</a>
+    <a href="add_admin.php">Add New admin</a>
+    
 </body>
 </html>

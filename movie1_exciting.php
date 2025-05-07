@@ -30,7 +30,7 @@ if (!$movie_id) {
     
     <div class="container">
         <a href="#" class="arrow-nav arrow-prev">‹</a>
-        <a href="movie2_exciting.html" class="arrow-nav arrow-next">›</a>
+        <a href="movie2_exciting.php" class="arrow-nav arrow-next">›</a>
         
         <div class="movie-card">
             <div class="movie-content">
@@ -94,65 +94,54 @@ if (!$movie_id) {
                 </div>
             </div>
         </div>
-            </div>
+    </div>
     <script>
-    function toggleWishlist() {
-        let movie = {
-            title: "Mad Max: Fury Road",
-            poster: "https://th.bing.com/th/id/R.a0753430500b50dd19efb368c2dd936e?rik=ophNTb4x4SPbTQ&riu=http%3a%2f%2fwww.thegoodthebadandtheodd.com%2fwp-content%2fuploads%2f2015%2f07%2fMadMax.jpg&ehk=Soaw5incFRJe0jUuIDXHMezxIiFgN%2f3ieGUEfqRVd9M%3d&risl=&pid=ImgRaw&r=0"
-        };
+        function loadWishlist() {
+            let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            let container = document.getElementById("wishlist-container");
+            container.innerHTML = "";
 
-        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        let index = wishlist.findIndex(item => item.title === movie.title);
+            if (wishlist.length === 0) {
+                container.innerHTML = "<p class='empty-wishlist'>Your wishlist is empty. Add some movies to watch later!</p>";
+                document.getElementById("wishlist-count").innerText = 0;
+                return;
+            }
 
-        if (index === -1) {
-            wishlist.push(movie);
-            alert("Added to Wishlist!");
-        } else {
-            wishlist.splice(index, 1);
-            alert("Removed from Wishlist!");
-        }
-
-        localStorage.setItem("wishlist", JSON.stringify(wishlist));
-        loadWishlist();
-    }
-
-    function loadWishlist() {
-        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        let container = document.getElementById("wishlist-container");
-        container.innerHTML = "";
-
-        if (wishlist.length === 0) {
-            container.innerHTML = "<p class='empty-wishlist'>Your wishlist is empty. Add some movies to watch later!</p>";
-            return;
-        }
-
-        wishlist.forEach(movie => {
-            let movieCard = document.createElement("div");
-            movieCard.classList.add("movie-card");
-            movieCard.innerHTML = `
-                <div class="movie-content">
-                    <div class="poster-container">
-                        <img src="${movie.poster}" alt="${movie.title} Poster" class="movie-poster">
+            wishlist.forEach(movie => {
+                let movieCard = document.createElement("div");
+                movieCard.classList.add("movie-card");
+                movieCard.setAttribute("data-id", movie.id);
+                movieCard.innerHTML = `
+                    <div class="movie-content">
+                        <div class="poster-container">
+                            <img src="${movie.poster}" alt="${movie.title} Poster" class="movie-poster">
+                        </div>
+                        <h3 class="movie-title">${movie.title}</h3>
+                        <button class="remove-btn" onclick="removeFromWishlist(${movie.id}, '${movie.title}')">Remove</button>
                     </div>
-                    <h3 class="movie-title">${movie.title}</h3>
-                    <button class="remove-btn" onclick="removeFromWishlist('${movie.title}')">Remove</button>
-                </div>
-            `;
-            container.appendChild(movieCard);
-        });
+                `;
+                container.appendChild(movieCard);
+            });
 
-        document.getElementById("wishlist-count").innerText = wishlist.length;
-    }
+            document.getElementById("wishlist-count").innerText = wishlist.length;
+        }
 
-    function removeFromWishlist(title) {
-        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        wishlist = wishlist.filter(movie => movie.title !== title);
-        localStorage.setItem("wishlist", JSON.stringify(wishlist));
-        loadWishlist();
-    }
+        function removeFromWishlist(movieId, title) {
+            let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            wishlist = wishlist.filter(movie => movie.title !== title);
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
 
-    window.onload = loadWishlist;
+            // Remove from database
+            fetch('update_wishlist.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ movie_id: movieId, action: 'remove' })
+            }).catch(error => alert(error.message));
+
+            loadWishlist();
+        }
+
+        window.onload = loadWishlist;
     </script>
 </body>
 </html>

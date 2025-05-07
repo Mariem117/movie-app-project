@@ -2,7 +2,7 @@
 session_start();
 require_once 'database.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: admin_login.php');
     exit();
 }
@@ -27,7 +27,6 @@ try {
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <?php include '../includes/header.php'; ?>
     <div class="dashboard">
         <h1>Admin Dashboard</h1>
         <?php if (isset($_SESSION['error_message'])): ?>
@@ -51,13 +50,11 @@ try {
         <div class="quick-links">
             <h2>Quick Links</h2>
             <ul>
-                <li><a href="addmovies.php">Manage Movies</a></li>
+                <li><a href="addmovie.php">Manage Movies</a></li>
                 <li><a href="showtimes.php">Manage Showtimes</a></li>
-                <li><a href="users.php">Manage Users</a></li>
-                <li><a href="bookings.php">Manage Bookings</a></li>
+                <li><a href="user.php">Manage Users</a></li>
             </ul>
         </div>
     </div>
-    <?php include '../includes/footer.php'; ?>
 </body>
 </html>

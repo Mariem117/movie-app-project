@@ -1,3 +1,17 @@
+<?php
+session_start();
+require_once 'database.php';
+$movie_title = 'Despicable Me 4';
+$pdo = getPDO();
+$stmt = $pdo->prepare("SELECT id FROM movies WHERE title = ?");
+$stmt->execute([$movie_title]);
+$movie = $stmt->fetch(PDO::FETCH_ASSOC);
+$movie_id = $movie ? $movie['id'] : null;
+if (!$movie_id) {
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +30,7 @@
     
     <div class="container">
         <a href="#" class="arrow-nav arrow-prev">&#8249;</a>
-        <a href="movie2_playful.html" class="arrow-nav arrow-next">&#8250;</a>
+        <a href="movie2_playful.php" class="arrow-nav arrow-next">&#8250;</a>
         
         <div class="movie-card">
             <div class="movie-content">
@@ -70,8 +84,8 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <a href="book_ticket.php" class="book-ticket">Book Ticket</a>
-                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist<a href='wishlist.php'></a></button>
+                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
+                            <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>
                         </div>
                     </div>
                 </div>

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($admin && password_verify($password, $admin['password'])) {
     error_log("Admin login successful: user_id=" . $admin['id']);
     $_SESSION['user_id'] = $admin['id'];
-    $_SESSION['user_role'] = $admin['role'];
+    $_SESSION['role'] = $admin['role'];
     $_SESSION['admin_logged_in'] = true;
     header('Location: dashboard.php');
     exit();

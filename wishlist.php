@@ -20,7 +20,7 @@ $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist</title>
     <link rel="icon" href="images/image(2).png" type="x-icon">
-    <link rel="stylesheet" href="styles/wishlist.css">
+    <link rel="stylesheet" href="wishlist.css">
 </head>
 <body>
     <div class="header">

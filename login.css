@@ -25,13 +25,16 @@ body {
     min-height: 75%;
     border: 1px solid #ccc;
 }
-
-.logi,-container h2 {
+h2{
+    color:white;
+}
+.login-container h2 {
     text-align: center;
     text-shadow: 2px 2px 4px #00c321;
     margin-top: 10%;
     margin-bottom: 20px;
     font-size: 3em;
+    
 }
 
 

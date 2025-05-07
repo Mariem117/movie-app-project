@@ -1,3 +1,17 @@
+<?php
+session_start();
+require_once 'database.php';
+$movie_title = 'Black Bag';
+$pdo = getPDO();
+$stmt = $pdo->prepare("SELECT id FROM movies WHERE title = ?");
+$stmt->execute([$movie_title]);
+$movie = $stmt->fetch(PDO::FETCH_ASSOC);
+$movie_id = $movie ? $movie['id'] : null;
+if (!$movie_id) {
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +28,7 @@
     </div>
     
     <div class="container">
-        <a href="movie1_thrilling.html" class="arrow-nav arrow-prev">‹</a>
+        <a href="movie1_thrilling.php" class="arrow-nav arrow-prev">‹</a>
         <a href="#" class="arrow-nav arrow-next">›</a>
         
         <div class="movie-card">
@@ -71,8 +85,8 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <button class="book-ticket">Book Ticket</button>
-                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist<a href='wishlist.php'></a></button>
+                            <button class="wishlist-btn" onclick="toggleWishlist()">Add to Wishlist</button>
+                            <a href="book_ticket.php?movie_id=<?= $movie_id ?>" class="book-ticket">Book Ticket</a>
                         </div>
                     </div>
                 </div>
